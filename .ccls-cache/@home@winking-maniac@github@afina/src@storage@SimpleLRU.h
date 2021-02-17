@@ -48,14 +48,8 @@ private:
         std::unique_ptr<lru_node> next;
     };
 
-    // Make a node, put it in list and map without validation check
-    bool _Put(const std::string &key, const std::string &value);
-
-    // Frees *size* bytes in storage. Do nothing when size <= 0
-    bool _FreeSpace(int size);
-
-    // Moves *node* to the head of list
-    void _MakeFirst(std::reference_wrapper<lru_node> node);
+    // Frees enough space to put *size* bytes in storage.
+    void _FreeSpace(int size, int old_size = -1);
 
     // Maximum number of bytes could be stored in this cache.
     // i.e all (keys+values) must be less the _max_size
@@ -70,7 +64,13 @@ private:
     std::unique_ptr<lru_node> _lru_head;
     lru_node *_lru_tail;
     // Index of nodes from list above, allows fast random access to elements by lru_node#key
-    std::map<std::reference_wrapper<std::string>, std::reference_wrapper<lru_node>, std::less<std::string>> _lru_index;
+    std::map<std::reference_wrapper<const std::string>, std::reference_wrapper<lru_node>, std::less<std::string>>
+        _lru_index;
+
+    using map_iterator = decltype(_lru_index.find(std::ref(lru_node::key)));
+    // Moves *node* to the head of list
+    void _MakeFirst(map_iterator iter);
+
 };
 
 } // namespace Backend
