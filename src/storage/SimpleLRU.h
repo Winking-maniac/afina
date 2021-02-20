@@ -22,7 +22,13 @@ public:
     ~SimpleLRU() {
         _lru_index.clear();
 
+        lru_node *cur = _lru_tail;
+        while (cur != nullptr) {
+            cur->next = nullptr;
+            cur = cur->prev;
+        }
         _lru_head.reset(); // TODO: Here is stack overflow
+
     }
 
     // Implements Afina::Storage interface
@@ -72,6 +78,7 @@ private:
     // Moves *node* to the head of list
     void _MakeFirst(map_iterator iter);
 
+    void _PrintStorage(const std::string & method);
 };
 
 } // namespace Backend
