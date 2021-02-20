@@ -5,6 +5,8 @@ generated/*
 /build
 /cmake-build-debug
 
+/.ccls-cache/**
+
 # local config use to test changes
 config/_local.conf
 
