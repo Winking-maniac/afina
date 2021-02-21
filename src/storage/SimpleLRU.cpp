@@ -95,9 +95,7 @@ bool SimpleLRU::Put(const std::string &key, const std::string &value)
         return true;
     } else {
         _FreeSpace(key.size() + value.size());
-        auto new_node = new lru_node();
-        new_node->key = key;
-        new_node->value = value;
+        auto new_node = new lru_node{key, value};
         new_node->prev = nullptr;
         new_node->next = std::move(_lru_head);
         if (_lru_tail == nullptr) {
@@ -126,9 +124,7 @@ bool SimpleLRU::PutIfAbsent(const std::string &key, const std::string &value)
         return false;
     }
     _FreeSpace(key.size() + value.size());
-    lru_node *new_node = new lru_node();
-    new_node->key = key;
-    new_node->value = value;
+    lru_node *new_node = new lru_node{key, value};
     new_node->prev = nullptr;
     new_node->next = std::move(_lru_head);
     if (_lru_tail == nullptr) {
@@ -180,11 +176,6 @@ bool SimpleLRU::Delete(const std::string &key)
         _lru_head = std::move(tmp);
     } else {
         node.prev->next = std::move(tmp);
-    }
-
-    for (auto it : _lru_index) {
-
-        std::cout << it.first.get() << ' ' << it.second.get().value << std::endl;
     }
     return true;
 }
